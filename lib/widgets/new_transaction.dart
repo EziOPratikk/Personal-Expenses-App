@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:intl/intl.dart';
+import 'package:personal_expenses_app/widgets/adaptive_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -62,72 +64,69 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      child: Container(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            TextField(
-              decoration: InputDecoration(labelText: 'Title'),
-              // onChanged: (val) {
-              //   titleInput = val;
-              // },
-              // We use controller as below instead of writing function
-              // for each to fetch the user input.
-              controller: _titleController,
-              // _ inside () means that we don't care about the value returned
-              // when on submitted.
-              onSubmitted: (_) => _submitData(),
-            ),
-            TextField(
-              decoration: InputDecoration(labelText: 'Amount'),
-              // onChanged: (val) => amountInput = val,
-              controller: _amountController,
-              keyboardType: TextInputType.number,
-              onSubmitted: (_) => _submitData(),
-            ),
-            Container(
-              height: 70,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _selectedDate == null
-                          ? 'No Date Chosen!'
-                          : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
-                    ),
-                  ),
-                  TextButton(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all(
-                          Theme.of(context).primaryColor),
-                    ),
-                    child: Icon(
-                      Icons.calendar_month_rounded,
-                      size: 30,
-                      // 'Choose Date',
-                      // style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: _presentDatePicker,
-                  ),
-                ],
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 5,
+        child: Container(
+          padding: EdgeInsets.only(
+            top: 10,
+            right: 10,
+            left: 10,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 10,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: 'Title'),
+                // onChanged: (val) {
+                //   titleInput = val;
+                // },
+                // We use controller as below instead of writing function
+                // for each to fetch the user input.
+                controller: _titleController,
+                // _ inside () means that we don't care about the value returned
+                // when on submitted.
+                onSubmitted: (_) => _submitData(),
               ),
-            ),
-            ElevatedButton(
-              onPressed: _submitData,
-              child: Text('Add Transaction'),
-              style: ButtonStyle(
-                textStyle: MaterialStateProperty.all(
-                    TextStyle(fontWeight: FontWeight.bold)),
-                foregroundColor: MaterialStateProperty.all(
-                    Theme.of(context).textTheme.button.color),
-                backgroundColor:
-                    MaterialStateProperty.all(Theme.of(context).primaryColor),
+              TextField(
+                decoration: InputDecoration(labelText: 'Amount'),
+                // onChanged: (val) => amountInput = val,
+                controller: _amountController,
+                keyboardType: TextInputType.number,
+                onSubmitted: (_) => _submitData(),
               ),
-            ),
-          ],
+              Container(
+                height: 70,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        _selectedDate == null
+                            ? 'No Date Chosen!'
+                            : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}',
+                      ),
+                    ),
+                    TextButton(
+                      style: ButtonStyle(
+                        foregroundColor: MaterialStateProperty.all(
+                            Theme.of(context).primaryColor),
+                      ),
+                      child: Icon(
+                        Icons.calendar_month_rounded,
+                        size: 30,
+                        // 'Choose Date',
+                        // style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: _presentDatePicker,
+                    ),
+                  ],
+                ),
+              ),
+              // Created custom Adaptive Button Widget using.
+              AdaptiveButton('Add Transaction', _submitData),
+            ],
+          ),
         ),
       ),
     );
