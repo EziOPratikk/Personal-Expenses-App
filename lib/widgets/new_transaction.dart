@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-
 import 'package:intl/intl.dart';
-import 'package:personal_expenses_app/widgets/adaptive_button.dart';
+
+import './adaptive_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
 
-  NewTransaction(this.addTx);
+  const NewTransaction(this.addTx);
 
   @override
   State<NewTransaction> createState() => _NewTransactionState();
@@ -78,7 +78,7 @@ class _NewTransactionState extends State<NewTransaction> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               TextField(
-                decoration: InputDecoration(labelText: 'Title'),
+                decoration: const InputDecoration(labelText: 'Title'),
                 // onChanged: (val) {
                 //   titleInput = val;
                 // },
@@ -90,7 +90,7 @@ class _NewTransactionState extends State<NewTransaction> {
                 onSubmitted: (_) => _submitData(),
               ),
               TextField(
-                decoration: InputDecoration(labelText: 'Amount'),
+                decoration: const InputDecoration(labelText: 'Amount'),
                 // onChanged: (val) => amountInput = val,
                 controller: _amountController,
                 keyboardType: TextInputType.number,
@@ -112,7 +112,7 @@ class _NewTransactionState extends State<NewTransaction> {
                         foregroundColor: MaterialStateProperty.all(
                             Theme.of(context).primaryColor),
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.calendar_month_rounded,
                         size: 30,
                         // 'Choose Date',

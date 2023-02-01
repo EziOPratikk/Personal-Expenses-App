@@ -7,7 +7,7 @@ class AdaptiveButton extends StatelessWidget {
   final String text;
   final Function handler;
 
-  AdaptiveButton(this.text, this.handler);
+  const AdaptiveButton(this.text, this.handler);
   @override
   Widget build(BuildContext context) {
     // dart:io should be imported to unlock Platform. check

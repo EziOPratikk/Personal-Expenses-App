@@ -62,7 +62,9 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+// with keyword is called mix in, which we use to get extra features of
+// that class. Let's understand as it interface keyword.
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   // String titleInput;
 
   final List<Transaction> _userTransactions = [
@@ -81,6 +83,25 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
 
   bool _showChart = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifeCycleState(AppLifecycleState state) {
+    // App life cycle has different state such as inactive, paused,
+    // resume and suspended.
+    print(state);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
@@ -127,6 +148,59 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // creating a builder method to return widget in order to make code or widget
+  // tree more clean and readable
+  List<Widget> _buildLandscapeContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text('Show Chart'),
+          // adaptive adapts w.r.t platform i.e. android, ios etc.
+          Switch.adaptive(
+            activeColor: Theme.of(context).accentColor,
+            value: _showChart,
+            onChanged: (val) {
+              setState(() {
+                _showChart = val;
+              });
+            },
+          ),
+        ],
+      ),
+      _showChart
+          ? Container(
+              // Created a variable named appBar to store appBar widget and
+              // deducted appBar height size and status bar height size
+              // to calculate the remaining portion of screen.
+              height: (mediaQuery.size.height -
+                      appBar.preferredSize.height -
+                      mediaQuery.padding.top) *
+                  0.7,
+              child: Chart(_recentTransactions),
+            )
+          : txListWidget,
+    ];
+  }
+
+  List<Widget> _buildPortraitContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget txListWidget) {
+    return [
+      Container(
+        // Created a variable named appBar to store appBar widget and
+        // deducted appBar height size and status bar height size
+        // to calculate the remaining portion of screen.
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
+            0.3,
+        child: Chart(_recentTransactions),
+      ),
+      txListWidget,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
@@ -162,47 +236,18 @@ class _MyHomePageState extends State<MyHomePage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (_isLandscape)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Show Chart'),
-                    // adaptive adapts w.r.t platform i.e. android, ios etc.
-                    Switch.adaptive(
-                      activeColor: Theme.of(context).accentColor,
-                      value: _showChart,
-                      onChanged: (val) {
-                        setState(() {
-                          _showChart = val;
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                ..._buildLandscapeContent(mediaQuery, appBar, txListWidget),
               if (!_isLandscape)
-                Container(
-                  // Created a variable named appBar to store appBar widget and
-                  // deducted appBar height size and status bar height size
-                  // to calculate the remaining portion of screen.
-                  height: (mediaQuery.size.height -
-                          appBar.preferredSize.height -
-                          mediaQuery.padding.top) *
-                      0.3,
-                  child: Chart(_recentTransactions),
-                ),
-              if (!_isLandscape) txListWidget,
-              if (_isLandscape)
-                _showChart
-                    ? Container(
-                        // Created a variable named appBar to store appBar widget and
-                        // deducted appBar height size and status bar height size
-                        // to calculate the remaining portion of screen.
-                        height: (mediaQuery.size.height -
-                                appBar.preferredSize.height -
-                                mediaQuery.padding.top) *
-                            0.7,
-                        child: Chart(_recentTransactions),
-                      )
-                    : txListWidget,
+                // ... is called spread operator. It is used in front of list.
+                // Here, it is used since we are passing list inside of the
+                // list of widgets, so using this operator we can pull elements
+                // out of the list and merge them as single elements into the
+                // surrounding list. For eg: here column takes list of childrens
+                // and this _buildPortraitContent method returns a list.
+                // So in this case the list that this method returns are pulled
+                // outside of the list and as single elements next to eachother
+                // in the outer list i.e. column's lists.
+                ..._buildPortraitContent(mediaQuery, appBar, txListWidget),
             ],
           ),
         ),
@@ -211,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Platform.isIOS
           ? Container()
           : FloatingActionButton(
-              child: Icon(Icons.add),
+              child: const Icon(Icons.add),
               onPressed: () => _startAddNewTransaction(context),
             ),
     );
